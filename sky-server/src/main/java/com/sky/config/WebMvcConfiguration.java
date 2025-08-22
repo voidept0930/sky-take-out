@@ -22,8 +22,12 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Slf4j
 public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
+    private final JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
+
     @Autowired
-    private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
+    public WebMvcConfiguration(JwtTokenAdminInterceptor jwtTokenAdminInterceptor) {
+        this.jwtTokenAdminInterceptor = jwtTokenAdminInterceptor;
+    }
 
     /**
      * 注册自定义拦截器

@@ -41,8 +41,11 @@ public class WeChatPayUtil {
     //申请退款接口地址
     public static final String REFUNDS = "https://api.mch.weixin.qq.com/v3/refund/domestic/refunds";
 
+    private final WeChatProperties weChatProperties;
     @Autowired
-    private WeChatProperties weChatProperties;
+    public WeChatPayUtil(WeChatProperties weChatProperties) {
+        this.weChatProperties = weChatProperties;
+    }
 
     /**
      * 获取调用微信接口的客户端工具对象
