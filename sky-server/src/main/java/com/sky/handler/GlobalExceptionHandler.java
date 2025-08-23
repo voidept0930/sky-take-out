@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public Result<String> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
         log.error("异常消息：{}", e.getMessage());
-        return Result.error("账号已重复，可直接登录，默认密码123456");
+        return Result.error("数据重复，请重新输入");
     }
 
     /**
