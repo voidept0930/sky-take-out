@@ -2,7 +2,6 @@ package com.sky.mapper;
 
 import com.sky.annotation.AutoFill;
 import com.sky.entity.Dish;
-import com.sky.entity.DishFlavor;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Insert;
@@ -34,12 +33,6 @@ public interface DishMapper {
     void saveDish(Dish dish);
 
     /**
-     * 新增菜品之菜品味道
-     * @param dishFlavorList
-     */
-    void saveDishFlavour(List<DishFlavor> dishFlavorList);
-
-    /**
      * 菜品分页查询
      * @param categoryId
      * @param name
@@ -47,5 +40,32 @@ public interface DishMapper {
      * @return
      */
     List<DishVO> pageQuery(Long categoryId, String name, Integer status);
+
+    /**
+     * 批量删除菜品
+     * @param ids
+     */
+    void deleteDish(List<Long> ids);
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    Dish getById(Long id);
+
+    /**
+     * 修改菜品
+     * @param dish
+     */
+    @AutoFill(OperationType.UPDATE)
+    void update(Dish dish);
+
+    /**
+     * 菜品起售、停售
+     * @param dish
+     */
+    @AutoFill(OperationType.UPDATE)
+    void startOrStop(Dish dish);
 
 }

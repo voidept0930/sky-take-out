@@ -6,6 +6,7 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
@@ -15,16 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class DishServiceImpl implements DishService {
 
     private final DishMapper dishMapper;
+    private final DishFlavorMapper dishFlavorMapper;
     @Autowired
-    public DishServiceImpl(DishMapper dishMapper) {
+    public DishServiceImpl(DishMapper dishMapper, DishFlavorMapper dishFlavorMapper) {
         this.dishMapper = dishMapper;
+        this.dishFlavorMapper = dishFlavorMapper;
     }
 
     /**
@@ -45,7 +48,7 @@ public class DishServiceImpl implements DishService {
                 dishFlavor.setDishId(dish.getId());
             }
         }
-        dishMapper.saveDishFlavour(dishFlavorList);
+        dishFlavorMapper.saveDishFlavour(dishFlavorList);
     }
 
     /**
@@ -63,5 +66,65 @@ public class DishServiceImpl implements DishService {
         );
         PageInfo<DishVO> pageInfo = new PageInfo<>(dishVOList);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    /**
+     * 批量删除菜品
+     * @param ids 菜品id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(List<Long> ids) {
+        dishMapper.deleteDish(ids);
+        dishFlavorMapper.deleteDishFlavor(ids);
+    }
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getById(Long id) {
+        Dish dish = dishMapper.getById(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+
+        dishVO.setFlavors(dishFlavorMapper.getById(id));
+        return dishVO;
+    }
+
+    /**
+     * 修改菜品
+     * @param dishDTO
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.update(dish);
+
+        dishFlavorMapper.deleteDishFlavor(Collections.singletonList(dishDTO.getId()));
+        List<DishFlavor> dishFlavorList = dishDTO.getFlavors();
+        if (dishFlavorList != null && !dishFlavorList.isEmpty()) {
+            for (DishFlavor dishFlavor: dishFlavorList) {
+                dishFlavor.setDishId(dishDTO.getId());
+            }
+            dishFlavorMapper.saveDishFlavour(dishFlavorList);
+        }
+    }
+
+    /**
+     * 菜品起售、停售
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Dish dish = new Dish();
+        dish.setId(id);
+        dish.setStatus(status);
+        dishMapper.startOrStop(dish);
     }
 }
