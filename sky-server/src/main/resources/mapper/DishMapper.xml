@@ -10,4 +10,19 @@
                 (#{dishFlavor.dishId}, #{dishFlavor.name}, #{dishFlavor.value})
             </foreach>
     </insert>
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        SELECT d.*, c.name category_name
+        FROM dish d LEFT JOIN category c ON d.category_id = c.id
+        <where>
+            <if test="categoryId != null and categoryId != 0">
+                AND d.category_id = #{categoryId}
+            </if>
+            <if test="name != null and name != ''">
+                AND d.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>
