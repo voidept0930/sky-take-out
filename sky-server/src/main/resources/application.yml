@@ -26,6 +26,10 @@ logging:
       sky:
         mapper: debug
         service: info
-        controller: info
+aliyun:
+  oss:
+    endpoint: ${sky.aliyun.oss.endpoint}
+    bucketName: ${sky.aliyun.oss.bucketName}
+    region: ${sky.aliyun.oss.region}
 
 
