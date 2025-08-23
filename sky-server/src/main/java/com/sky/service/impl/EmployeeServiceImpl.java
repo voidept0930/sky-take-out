@@ -83,10 +83,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         String password = DigestUtils.md5DigestAsHex("123456".getBytes());
         employee.setPassword(password);
         employee.setStatus(StatusConstant.ENABLE);
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.save(employee);
     }
@@ -110,8 +106,10 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void startOrStop(Integer status, Long id) {
-        LocalDateTime updateTime = LocalDateTime.now();
-        employeeMapper.startOrStop(status, id, updateTime, BaseContext.getCurrentId());
+        Employee employee = new Employee();
+        employee.setStatus(status);
+        employee.setId(id);
+        employeeMapper.startOrStop(employee);
     }
 
     /**
@@ -132,8 +130,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.update(employee);
     }
 
@@ -153,7 +149,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         employee.setId(passwordEditDTO.getEmpId());
         employee.setPassword(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()));
-        employee.setUpdateTime(LocalDateTime.now());
         employeeMapper.updatePassword(employee);
     }
 }

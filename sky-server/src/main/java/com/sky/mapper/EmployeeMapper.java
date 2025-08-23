@@ -1,9 +1,10 @@
 package com.sky.mapper;
 
+import com.sky.annotation.AutoFill;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import org.apache.ibatis.annotations.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -24,6 +25,7 @@ public interface EmployeeMapper {
     @Insert("INSERT INTO employee (name, username, password, phone, sex, id_number, create_time, update_time, create_user, update_user) VALUES " +
             "(#{name}, #{username}, #{password}, #{phone}, #{sex}, #{idNumber}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
+    @AutoFill(OperationType.INSERT)
     void save(Employee employee);
 
     /**
@@ -35,13 +37,10 @@ public interface EmployeeMapper {
 
     /**
      * 启用、禁用员工账号
-     * @param status
-     * @param id
-     * @param updateTime
-     * @param updateUser
      */
     @Update("UPDATE employee SET status = #{status}, update_time = #{updateTime}, update_user = #{updateUser} WHERE id = #{id}")
-    void startOrStop(Integer status, Long id, LocalDateTime updateTime, Long updateUser);
+    @AutoFill(OperationType.UPDATE)
+    void startOrStop(Employee employee);
 
     /**
      * 根据id查询员工
@@ -56,6 +55,7 @@ public interface EmployeeMapper {
      * @param employee
      */
     @Update("UPDATE employee SET id_number = #{idNumber}, name = #{name}, phone = #{phone}, sex = #{sex}, username = #{username}, update_user = #{updateUser}, update_time = #{updateTime} WHERE id = #{id}")
+    @AutoFill(OperationType.UPDATE)
     void update(Employee employee);
 
     /**
@@ -63,6 +63,7 @@ public interface EmployeeMapper {
      * @param employee
      */
     @Update("UPDATE employee SET password = #{password}, update_time = #{updateTime} WHERE id = #{id}")
+    @AutoFill(OperationType.UPDATE)
     void updatePassword(Employee employee);
 
 }
