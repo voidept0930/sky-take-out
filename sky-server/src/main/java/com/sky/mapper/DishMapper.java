@@ -4,6 +4,7 @@ import com.sky.annotation.AutoFill;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -37,5 +38,14 @@ public interface DishMapper {
      * @param dishFlavorList
      */
     void saveDishFlavour(List<DishFlavor> dishFlavorList);
+
+    /**
+     * 菜品分页查询
+     * @param categoryId
+     * @param name
+     * @param status
+     * @return
+     */
+    List<DishVO> pageQuery(Long categoryId, String name, Integer status);
 
 }
