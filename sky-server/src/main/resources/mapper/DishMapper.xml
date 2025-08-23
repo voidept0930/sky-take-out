@@ -52,4 +52,7 @@
         FROM dish d LEFT JOIN category c ON d.category_id = c.id
         WHERE d.id = #{id}
     </select>
+    <select id="getByCategory" resultType="com.sky.entity.Dish">
+        SELECT * FROM dish WHERE category_id = #{catagoryId}
+    </select>
 </mapper>
