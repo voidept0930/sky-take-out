@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public Result<String> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
-        log.error("异常消息：{}", e.getMessage());
+        log.error("数据重复异常：{}", e.getMessage());
         return Result.error("数据重复，请重新输入");
     }
 
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UserNotLoginException.class)
     public Result<String> handleUserNotLoginException(UserNotLoginException e) {
-        log.error("异常消息：{}", e.getMessage());
+        log.error("JWT失效异常：{}", e.getMessage());
         return Result.error("登录失效，请重新登陆");
     }
 
