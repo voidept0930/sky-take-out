@@ -33,6 +33,7 @@
         <aliyun-sdk.oss>3.18.3</aliyun-sdk.oss>
         <javax.activation>1.1.1</javax.activation>
         <jaxb.runtime>2.3.3</jaxb.runtime>
+        <httpclient5>5.5</httpclient5>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -156,6 +157,11 @@
                 <version>${springboot}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
