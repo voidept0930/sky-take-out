@@ -67,7 +67,7 @@ public class UserController {
      */
     @PostMapping("/logout")
     public Result<String> logout() {
-        BaseContext.removeCurrentId();
+        BaseContext.removeCurrentUserId();
         return Result.success();
     }
 
