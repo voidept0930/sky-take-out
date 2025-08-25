@@ -40,4 +40,7 @@
     <select id="getById" resultType="com.sky.entity.Setmeal">
         SELECT * FROM setmeal WHERE id = #{id}
     </select>
+    <select id="getByCategoryId" resultType="com.sky.entity.Setmeal">
+        SELECT * FROM setmeal WHERE category_id = #{categoryId}
+    </select>
 </mapper>

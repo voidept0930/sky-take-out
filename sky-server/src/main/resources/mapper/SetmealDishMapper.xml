@@ -19,4 +19,7 @@
     <select id="getById" resultType="com.sky.entity.SetmealDish">
         SELECT * FROM setmeal_dish WHERE setmeal_id = #{setmealId}
     </select>
+    <select id="getContainedDishById" resultType="com.sky.vo.DishItemVO">
+        SELECT * FROM setmeal_dish WHERE setmeal_id = #{id}
+    </select>
 </mapper>
