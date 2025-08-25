@@ -139,6 +139,8 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void updatePassword(PasswordEditDTO passwordEditDTO) {
+        passwordEditDTO.setEmpId(BaseContext.getCurrentId());
+
         String oriPassword = getById(passwordEditDTO.getEmpId()).getPassword();
         String oldPassword = passwordEditDTO.getOldPassword();
         String oldPasswordMd5 = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
