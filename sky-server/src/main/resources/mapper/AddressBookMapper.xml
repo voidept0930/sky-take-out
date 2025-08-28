@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.AddressBookMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO address_book (user_id, consignee, sex, phone, province_code, province_name, city_code, city_name, district_code, district_name, detail, label)
+        VALUES (#{userId}, #{consignee}, #{sex}, #{phone}, #{provinceCode}, #{provinceName}, #{cityCode}, #{cityName}, #{districtCode}, #{districtName}, #{detail}, #{label})
+    </insert>
+    <update id="setDefaultAddress">
+        UPDATE address_book SET is_default = 1
+        WHERE id = #{id}
+    </update>
+    <update id="setNotDefaultAddress">
+        UPDATE address_book SET is_default = 0
+        WHERE user_id = #{userId} AND id != #{id}
+    </update>
+    <update id="update">
+        UPDATE address_book
+        <set>
+            <if test="consignee != null and consignee != ''">consignee = #{consignee},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="provinceCode != null and provinceCode != ''">province_code = #{provinceCode},</if>
+            <if test="provinceName != null and provinceName != ''">province_name = #{provinceName},</if>
+            <if test="cityCode != null and cityCode != ''">city_code = #{cityCode},</if>
+            <if test="cityName != null and cityName != ''">city_name = #{cityName},</if>
+            <if test="districtCode != null and districtCode != ''">district_code = #{districtCode},</if>
+            <if test="districtName != null and districtName != ''">district_name = #{districtName},</if>
+            <if test="detail != null and detail != ''">detail = #{detail},</if>
+            <if test="label != null and label != ''">label = #{label},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM address_book WHERE id = #{id}
+    </delete>
+    <select id="get" resultType="com.sky.entity.AddressBook">
+        SELECT * FROM address_book WHERE user_id = #{userId}
+    </select>
+    <select id="getDefaultAddress" resultType="com.sky.entity.AddressBook">
+        SELECT * FROM address_book WHERE user_id = #{userId} AND is_default = 1
+    </select>
+    <select id="getById" resultType="com.sky.entity.AddressBook">
+        SELECT * FROM address_book WHERE id = #{id}
+    </select>
+
+</mapper>
