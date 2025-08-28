@@ -5,6 +5,7 @@ import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +20,9 @@ import java.util.List;
 public class DishController {
 
     private final DishService dishService;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final ValueOperations<String, Object> valueOperations;
     @Autowired
-    public DishController(DishService dishService, RedisTemplate<String, Object> redisTemplate) {
+    public DishController(DishService dishService) {
         this.dishService = dishService;
-        this.redisTemplate = redisTemplate;
-        this.valueOperations = redisTemplate.opsForValue();
     }
 
     /**
@@ -34,20 +31,9 @@ public class DishController {
      * @return
      */
     @GetMapping("/list")
+    @Cacheable(value = "dishCache", key = "#categoryId")
     public Result<List<DishVO>> gerByCategory(Long categoryId) {
         log.info("根据分类id{}查询菜品（C端）", categoryId);
-
-        // 查询Redis中是否存在菜品数据
-        String key = "dish_" + categoryId;
-        List<DishVO> dishVOList = (List<DishVO>) valueOperations.get(key);
-
-        // 如果存在，直接返回查询数据
-        if (dishVOList != null && !dishVOList.isEmpty()) {
-            return Result.success(dishVOList);
-        }
-        // 如果不存在，则查询数据库，并将数据存到Redis中
-        dishVOList = dishService.getByCategoryWithFlavors(categoryId);
-        valueOperations.set(key, dishVOList);
-        return Result.success(dishVOList);
+        return Result.success(dishService.getByCategoryWithFlavors(categoryId));
     }
 }
