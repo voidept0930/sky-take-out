@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ShoppingCartMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO shopping_cart (name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time)
+        VALUES (#{name}, #{image}, #{userId}, #{dishId}, #{setmealId}, #{dishFlavor}, #{amount}, #{createTime})
+    </insert>
+    <update id="updateNumberIncr">
+        UPDATE shopping_cart SET number = number + 1
+        <where>
+            <if test="userId != null and userId != ''">AND user_id = #{userId}</if>
+            <if test="dishId != null">AND dish_id = #{dishId}</if>
+            <if test="setmealId != null">AND setmeal_id =#{setmealId}</if>
+            <if test="dishFlavor != null and dishFlavor != ''">AND dish_flavor = #{dishFlavor}</if>
+        </where>
+    </update>
+    <update id="updateNumberDecr">
+        UPDATE shopping_cart SET number = number - 1
+        <where>
+            <if test="userId != null and userId != ''">AND user_id = #{userId}</if>
+            <if test="dishId != null">AND dish_id = #{dishId}</if>
+            <if test="setmealId != null">AND setmeal_id =#{setmealId}</if>
+            <if test="dishFlavor != null and dishFlavor != ''">AND dish_flavor = #{dishFlavor}</if>
+        </where>
+    </update>
+    <delete id="deleteOne">
+        DELETE FROM shopping_cart
+        <where>
+            <if test="userId != null and userId != ''">AND user_id = #{userId}</if>
+            <if test="dishId != null">AND dish_id = #{dishId}</if>
+            <if test="setmealId != null">AND setmeal_id =#{setmealId}</if>
+            <if test="dishFlavor != null and dishFlavor != ''">AND dish_flavor = #{dishFlavor}</if>
+        </where>
+    </delete>
+    <delete id="clean">
+        DELETE FROM shopping_cart WHERE user_id = #{userId}
+    </delete>
+
+    <select id="getNumber" resultType="java.lang.Integer">
+        SELECT number FROM shopping_cart
+        <where>
+            <if test="userId != null and userId != ''">AND user_id = #{userId}</if>
+            <if test="dishId != null">AND dish_id = #{dishId}</if>
+            <if test="setmealId != null">AND setmeal_id =#{setmealId}</if>
+            <if test="dishFlavor != null and dishFlavor != ''">AND dish_flavor = #{dishFlavor}</if>
+        </where>
+    </select>
+    <select id="get" resultType="com.sky.entity.ShoppingCart">
+        SELECT * FROM shopping_cart WHERE user_id = #{userId}
+    </select>
+</mapper>
