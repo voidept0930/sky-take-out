@@ -48,8 +48,8 @@ public class DishServiceImpl implements DishService {
             for (DishFlavor dishFlavor: dishFlavorList) {
                 dishFlavor.setDishId(dish.getId());
             }
+            dishFlavorMapper.saveDishFlavour(dishFlavorList);
         }
-        dishFlavorMapper.saveDishFlavour(dishFlavorList);
     }
 
     /**

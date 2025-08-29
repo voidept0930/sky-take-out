@@ -4,9 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
@@ -14,6 +12,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -206,7 +207,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 取消订单
+     * 取消订单（用户端）
      * @param id
      */
     @Override
@@ -216,9 +217,30 @@ public class OrderServiceImpl implements OrderService {
         orders.setId(id);
         orders.setStatus(Orders.CANCELLED);
 
-        // 若订单处于待接单状态，需要进行退款
+        // 若订单处于已支付状态，需要进行退款
         Orders orders1 = orderMapper.getById(id);
-        if (orders1.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+        if (orders1.getPayStatus().equals(Orders.PAID)) {
+            // 调用微信支付退款接口
+            orders.setPayStatus(Orders.REFUND);
+        }
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 取消订单（管理端）
+     * @param ordersCancelDTO
+     */
+    @Override
+    public void cancel(OrdersCancelDTO ordersCancelDTO) {
+        Orders orders = new Orders();
+        orders.setId(ordersCancelDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
+        orders.setCancelTime(LocalDateTime.now());
+
+        // 若订单处于已支付状态，需要进行退款
+        Orders orders1 = orderMapper.getById(ordersCancelDTO.getId());
+        if (orders1.getPayStatus().equals(Orders.PAID)) {
             // 调用微信支付退款接口
             orders.setPayStatus(Orders.REFUND);
         }
@@ -248,5 +270,80 @@ public class OrderServiceImpl implements OrderService {
 
 
 
+    }
+
+    /**
+     * 各个状态的订单数量统计
+     * @return
+     */
+    @Override
+    public OrderStatisticsVO statistics() {
+
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        Integer toBeConfirmed = orderMapper.getByStatus(Orders.TO_BE_CONFIRMED);
+        if (toBeConfirmed != null) {
+            orderStatisticsVO.setToBeConfirmed(toBeConfirmed);
+        }
+        Integer confirmed = orderMapper.getByStatus(Orders.CONFIRMED);
+        if (confirmed != null) {
+            orderStatisticsVO.setConfirmed(confirmed);
+        }
+        Integer deliveryInProgress = orderMapper.getByStatus(Orders.DELIVERY_IN_PROGRESS);
+        if (deliveryInProgress != null) {
+            orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
+        }
+
+        return orderStatisticsVO;
+    }
+
+    /**
+     * 接单
+     * @param ordersConfirmDTO
+     */
+    @Override
+    public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
+        ordersConfirmDTO.setStatus(Orders.CONFIRMED);
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersConfirmDTO, orders);
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 拒单（拒绝+退款）
+     * @param ordersRejectionDTO
+     */
+    @Override
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersRejectionDTO, orders);
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        // 调用微信支付退款接口
+        orders.setPayStatus(Orders.REFUND);
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 派送订单
+     * @param id
+     */
+    @Override
+    public void delivery(Long id) {
+        Orders orders = new Orders();
+        orders.setId(id);
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 完成订单
+     * @param id
+     */
+    @Override
+    public void complete(Long id) {
+        Orders orders = new Orders();
+        orders.setId(id);
+        orders.setStatus(Orders.COMPLETED);
+        orderMapper.update(orders);
     }
 }

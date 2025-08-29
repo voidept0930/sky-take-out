@@ -42,4 +42,11 @@ public interface OrderMapper {
      */
     Orders getById(Long id);
 
+    /**
+     * 根据状态查询订单数量
+     * @param status
+     * @return
+     */
+    Integer getByStatus(Integer status);
+
 }
