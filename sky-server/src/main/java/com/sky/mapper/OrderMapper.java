@@ -42,10 +42,4 @@ public interface OrderMapper {
      */
     Orders getById(Long id);
 
-    /**
-     * 取消订单
-     * @param orders
-     */
-    void cancel(Orders orders);
-
 }

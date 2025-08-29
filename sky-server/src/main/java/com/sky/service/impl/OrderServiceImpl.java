@@ -168,7 +168,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
-
+        // 前端无法渲染分页按钮，疑似前端问题
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentUserId());
         PageHelper.startPage(
                 ordersPageQueryDTO.getPage(),
@@ -214,7 +214,15 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = new Orders();
         orders.setCancelTime(LocalDateTime.now());
         orders.setId(id);
-        orderMapper.cancel(orders);
+        orders.setStatus(Orders.CANCELLED);
+
+        // 若订单处于待接单状态，需要进行退款
+        Orders orders1 = orderMapper.getById(id);
+        if (orders1.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            // 调用微信支付退款接口
+            orders.setPayStatus(Orders.REFUND);
+        }
+        orderMapper.update(orders);
     }
 
     /**
