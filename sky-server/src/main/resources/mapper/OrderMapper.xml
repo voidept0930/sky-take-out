@@ -38,4 +38,20 @@
         </set>
         WHERE id = #{id}
     </update>
+    <update id="cancel">
+        UPDATE orders
+        SET status = 6, cancel_time = #{cancelTime}
+        WHERE id = #{id}
+    </update>
+    <select id="pageQuery" resultType="com.sky.entity.Orders">
+        SELECT * FROM orders
+        <where>
+            <if test="status != null">AND status = #{status}</if>
+            <if test="userId != null and userId != ''">AND user_id = #{userId}</if>
+        </where>
+        ORDER BY estimated_delivery_time DESC
+    </select>
+    <select id="getById" resultType="com.sky.entity.Orders">
+        SELECT * FROM orders WHERE id = #{id}
+    </select>
 </mapper>

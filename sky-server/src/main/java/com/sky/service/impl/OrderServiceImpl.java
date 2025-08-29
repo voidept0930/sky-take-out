@@ -1,22 +1,26 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.*;
 import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +34,6 @@ public class OrderServiceImpl implements OrderService {
     private final ShoppingCartMapper shoppingCartMapper;
     private final UserMapper userMapper;
     private final WeChatPayUtil weChatPayUtil;
-    // 订单号计数
-    private static Long number = 0L;
     @Autowired
     public OrderServiceImpl(OrderMapper orderMapper,
                             OrderDetailMapper orderDetailMapper,
@@ -59,8 +61,9 @@ public class OrderServiceImpl implements OrderService {
         // 设置订单基本信息
         Orders orders = new Orders();
         BeanUtils.copyProperties(ordersSubmitDTO, orders);
-        number++;
-        orders.setNumber(String.valueOf(number));
+        // 订单编号格式：当前时间戳+userId（确保唯一性）
+        String number = System.currentTimeMillis() + BaseContext.getCurrentUserId();
+        orders.setNumber(number);
         orders.setStatus(Orders.PENDING_PAYMENT);
         orders.setUserId(BaseContext.getCurrentUserId());
         orders.setOrderTime(LocalDateTime.now());
@@ -98,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
         OrderSubmitVO orderSubmitVO = new OrderSubmitVO();
         orderSubmitVO.setId(orders.getId());
         orderSubmitVO.setOrderAmount(orders.getAmount());
-        orderSubmitVO.setOrderNumber(String.valueOf(number));
+        orderSubmitVO.setOrderNumber(number);
         orderSubmitVO.setOrderTime(orders.getOrderTime());
 
         return orderSubmitVO;
@@ -158,4 +161,84 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    /**
+     * 历史订单查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
+
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentUserId());
+        PageHelper.startPage(
+                ordersPageQueryDTO.getPage(),
+                ordersPageQueryDTO.getPageSize()
+        );
+        List<OrderVO> orderVOList = new ArrayList<>();
+
+        // 查询订单基本信息
+        List<Orders> ordersList = orderMapper.pageQuery(ordersPageQueryDTO);
+        for (Orders orders: ordersList) {
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(orders, orderVO);
+            // 对每一个订单查询detail
+            List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
+            orderVO.setOrderDetailList(orderDetailList);
+            orderVOList.add(orderVO);
+        }
+
+        PageInfo<OrderVO> pageInfo = new PageInfo<>(orderVOList);
+        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    /**
+     * 查询订单详情
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderVO getById(Long id) {
+        OrderVO orderVO = new OrderVO();
+        Orders orders = orderMapper.getById(id);
+        BeanUtils.copyProperties(orders, orderVO);
+        orderVO.setOrderDetailList(orderDetailMapper.getByOrderId(id));
+        return orderVO;
+    }
+
+    /**
+     * 取消订单
+     * @param id
+     */
+    @Override
+    public void cancel(Long id) {
+        Orders orders = new Orders();
+        orders.setCancelTime(LocalDateTime.now());
+        orders.setId(id);
+        orderMapper.cancel(orders);
+    }
+
+    /**
+     * 再来一单
+     * <p>就是把id对应的菜品重新放入购物车中</p>
+     * @param id
+     */
+    @Override
+    public void repetition(Long id) {
+        // 拿到这个id有什么菜品/套餐
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        // 清空购物车
+        shoppingCartMapper.clean(BaseContext.getCurrentUserId());
+
+        // 将订单信息转换成购物车信息，并添加至购物车
+        for (OrderDetail orderDetail: orderDetailList) {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(orderDetail, shoppingCart);
+            shoppingCart.setUserId(BaseContext.getCurrentUserId());
+            shoppingCartMapper.save(shoppingCart);
+        }
+
+
+
+
+    }
 }

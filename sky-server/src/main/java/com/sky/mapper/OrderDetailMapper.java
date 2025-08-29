@@ -14,4 +14,11 @@ public interface OrderDetailMapper {
      */
     void saveOrderDetail(List<OrderDetail> orderDetailList);
 
+    /**
+     * 根据订单id查订单detail
+     * @param orderId
+     * @return
+     */
+    List<OrderDetail> getByOrderId(Long orderId);
+
 }
