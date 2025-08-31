@@ -61,5 +61,8 @@
     <select id="getByStatus" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM orders WHERE status = #{status}
     </select>
+    <select id="getByStatusAndTime" resultType="com.sky.entity.Orders">
+        SELECT * FROM orders WHERE status = #{status} AND order_time &lt;= #{orderTime}
+    </select>
 
 </mapper>
