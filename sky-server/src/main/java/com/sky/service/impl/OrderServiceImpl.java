@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -15,6 +16,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,19 +37,22 @@ public class OrderServiceImpl implements OrderService {
     private final ShoppingCartMapper shoppingCartMapper;
     private final UserMapper userMapper;
     private final WeChatPayUtil weChatPayUtil;
+    private final WebSocketServer webSocketServer;
     @Autowired
     public OrderServiceImpl(OrderMapper orderMapper,
                             OrderDetailMapper orderDetailMapper,
                             AddressBookMapper addressBookMapper,
                             ShoppingCartMapper shoppingCartMapper,
                             UserMapper userMapper,
-                            WeChatPayUtil weChatPayUtil) {
+                            WeChatPayUtil weChatPayUtil,
+                            WebSocketServer webSocketServer) {
         this.orderMapper = orderMapper;
         this.orderDetailMapper = orderDetailMapper;
         this.addressBookMapper = addressBookMapper;
         this.shoppingCartMapper = shoppingCartMapper;
         this.userMapper = userMapper;
         this.weChatPayUtil = weChatPayUtil;
+        this.webSocketServer = webSocketServer;
     }
 
     /**
@@ -160,6 +165,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        // 来单提醒
+        Map<String, Object> webServerMessage = new HashMap<>();
+        webServerMessage.put("type", 1);
+        webServerMessage.put("orderId", ordersDB.getId());
+        webServerMessage.put("content", "订单号" + outTradeNo);
+        webSocketServer.sendToClient(JSON.toJSONString(webServerMessage));
+
     }
 
     /**
@@ -345,5 +358,21 @@ public class OrderServiceImpl implements OrderService {
         orders.setId(id);
         orders.setStatus(Orders.COMPLETED);
         orderMapper.update(orders);
+    }
+
+    /**
+     * 催单
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+
+        Orders orders = orderMapper.getById(id);
+
+        Map<String, Object> webSocketMessage = new HashMap<>();
+        webSocketMessage.put("type", 2);
+        webSocketMessage.put("orderId", id);
+        webSocketMessage.put("content", "订单号" + orders.getNumber());
+        webSocketServer.sendToClient(JSON.toJSONString(webSocketMessage));
     }
 }

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController("userOrderController")
 @Slf4j
 @RequestMapping("/user/order")
@@ -93,6 +94,18 @@ public class OrderController {
     public Result<String> repetition(@PathVariable Long id) {
         log.info("再来一单{}", id);
         orderService.repetition(id);
+        return Result.success();
+    }
+
+    /**
+     * 催单
+     * @param id
+     * @return
+     */
+    @GetMapping("/reminder/{id}")
+    public Result<String> reminder(@PathVariable Long id) {
+        log.info("订单{}的客户催单", id);
+        orderService.reminder(id);
         return Result.success();
     }
 
