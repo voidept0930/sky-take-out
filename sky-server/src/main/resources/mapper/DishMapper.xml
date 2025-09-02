@@ -56,4 +56,7 @@
         SELECT d.*, c.name category_name FROM dish d LEFT JOIN category c ON d.category_id = c.id
         WHERE category_id = #{catagoryId}
     </select>
+    <select id="getNumberByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM dish WHERE status = #{status}
+    </select>
 </mapper>

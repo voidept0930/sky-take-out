@@ -69,4 +69,12 @@ public interface SetmealMapper {
      * @return
      */
     List<Setmeal> getByCategoryId(Long categoryId);
+
+    /**
+     * 根据状态查询套餐数量
+     * @param status
+     * @return
+     */
+    Integer getNumberByStatus(Integer status);
+
 }

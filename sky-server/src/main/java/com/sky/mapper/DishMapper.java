@@ -75,4 +75,11 @@ public interface DishMapper {
      */
     List<Dish> getByCategory(Long categoryId);
 
+    /**
+     * 根据菜品状态查询菜品数量
+     * @param status
+     * @return
+     */
+    Integer getNumberByStatus(Integer status);
+
 }

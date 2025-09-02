@@ -64,5 +64,11 @@
     <select id="getByStatusAndTime" resultType="com.sky.entity.Orders">
         SELECT * FROM orders WHERE status = #{status} AND order_time &lt;= #{orderTime}
     </select>
+    <select id="getNumberByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM orders
+        <where>
+            <if test="status != null">status = #{status}</if>
+        </where>
+    </select>
 
 </mapper>
