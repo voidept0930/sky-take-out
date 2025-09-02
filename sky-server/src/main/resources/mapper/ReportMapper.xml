@@ -8,12 +8,12 @@
               checkout_time >= #{zero} AND
               checkout_time &lt;= #{twentyFour}
     </select>
-    <select id="getNewUserByDate" resultType="java.lang.Long">
+    <select id="getNewUserByDate" resultType="java.lang.Integer">
         SELECT COUNT(id) FROM user
         WHERE create_time >= #{zero} AND
               create_time &lt;= #{twentyFour}
     </select>
-    <select id="getTotalUserByDate" resultType="java.lang.Long">
+    <select id="getTotalUserByDate" resultType="java.lang.Integer">
         SELECT COUNT(id) FROM user
         WHERE create_time &lt;= #{twentyFour}
     </select>

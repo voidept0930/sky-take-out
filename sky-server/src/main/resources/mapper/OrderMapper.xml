@@ -51,7 +51,7 @@
             <if test="number != null and number != ''">AND number = #{number}</if>
             <if test="phone != null and phone != ''">AND phone = #{phone}</if>
             <if test="beginTime != null">AND order_time >= #{beginTime}</if>
-            <if test="endTime != null">AND end_time &lt;= #{endTime}</if>
+            <if test="endTime != null">AND order_time &lt;= #{endTime}</if>
         </where>
         ORDER BY order_time DESC
     </select>

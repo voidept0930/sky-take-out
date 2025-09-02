@@ -23,14 +23,14 @@ public interface ReportMapper {
      * @param twentyFour
      * @return
      */
-    Long getNewUserByDate(LocalDateTime zero, LocalDateTime twentyFour);
+    Integer getNewUserByDate(LocalDateTime zero, LocalDateTime twentyFour);
 
     /**
      * 查询某一日总用户数
      * @param twentyFour
      * @return
      */
-    Long getTotalUserByDate(LocalDateTime twentyFour);
+    Integer getTotalUserByDate(LocalDateTime twentyFour);
 
     /**
      * 查询某一日订单数

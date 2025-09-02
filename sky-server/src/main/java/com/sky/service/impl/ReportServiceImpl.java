@@ -79,8 +79,8 @@ public class ReportServiceImpl implements ReportService {
         }
 
         // 处理newUserList和totalUserList
-        List<Long> newUserList = new ArrayList<>();
-        List<Long> totalUserList = new ArrayList<>();
+        List<Integer> newUserList = new ArrayList<>();
+        List<Integer> totalUserList = new ArrayList<>();
         for (LocalDate date : dateList) {
             LocalDateTime zero = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime twentyFour = LocalDateTime.of(date, LocalTime.MAX);
