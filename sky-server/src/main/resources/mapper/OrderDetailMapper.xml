@@ -13,5 +13,12 @@
     <select id="getByOrderId" resultType="com.sky.entity.OrderDetail">
         SELECT * FROM order_detail WHERE order_id = #{orderId}
     </select>
+    <select id="getTop10" resultType="com.sky.dto.GoodsSalesDTO">
+        SELECT od.name, SUM(od.number) number FROM order_detail od LEFT JOIN orders o ON od.order_id = o.id
+        WHERE o.status = 5 AND order_time >= #{zero} AND order_time &lt;= #{twentyFour}
+        GROUP BY name
+        ORDER BY number DESC
+        LIMIT 0, 10
+    </select>
 
 </mapper>

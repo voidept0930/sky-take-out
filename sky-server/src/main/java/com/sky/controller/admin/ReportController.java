@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @RestController
@@ -83,5 +84,18 @@ public class ReportController {
         log.info("统计{}~{}top10的菜品", begin, end);
         return Result.success(reportService.top10(begin, end));
     }
+
+    /**
+     * 导出最近30天的运营数据
+     * @return
+     */
+    @GetMapping("/export")
+    public Result<String> export() throws IOException {
+        log.info("导出{}~{}的运营数据", LocalDate.now().minusDays(30), LocalDate.now());
+        reportService.export();
+        return Result.success();
+    }
+
+
 
 }

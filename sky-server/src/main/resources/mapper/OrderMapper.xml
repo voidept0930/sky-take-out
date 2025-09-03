@@ -70,5 +70,19 @@
             <if test="status != null">status = #{status}</if>
         </where>
     </select>
+    <select id="getTurnOverByDate" resultType="java.lang.Double">
+        SELECT SUM(amount) FROM orders
+        WHERE status = 5 AND
+            checkout_time >= #{zero} AND
+            checkout_time &lt;= #{twentyFour}
+    </select>
+    <select id="getOrderCountByDate" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM orders
+        <where>
+            <if test="zero != null">AND order_time >= #{zero}</if>
+            <if test="twentyFour != null">AND order_time &lt;= #{twentyFour}</if>
+            <if test="status != null">AND status = #{status}</if>
+        </where>
+    </select>
 
 </mapper>

@@ -1,8 +1,10 @@
 package com.sky.mapper;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.OrderDetail;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -20,5 +22,13 @@ public interface OrderDetailMapper {
      * @return
      */
     List<OrderDetail> getByOrderId(Long orderId);
+
+    /**
+     * 查询top10
+     * @param zero
+     * @param twentyFour
+     * @return
+     */
+    List<GoodsSalesDTO> getTop10(LocalDateTime zero, LocalDateTime twentyFour);
 
 }

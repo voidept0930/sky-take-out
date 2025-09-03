@@ -28,7 +28,7 @@
         <aspectj>1.9.4</aspectj>
         <jjwt>0.9.1</jjwt>
         <jaxb-api>2.3.1</jaxb-api>
-        <poi>3.16</poi>
+        <poi>5.4.1</poi>
         <springboot>3.5.5</springboot>
         <aliyun-sdk.oss>3.18.3</aliyun-sdk.oss>
         <javax.activation>1.1.1</javax.activation>

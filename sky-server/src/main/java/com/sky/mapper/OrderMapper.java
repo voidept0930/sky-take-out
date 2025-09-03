@@ -63,4 +63,21 @@ public interface OrderMapper {
      */
     Integer getNumberByStatus(Integer status);
 
+    /**
+     * 查询某一日的订单总额
+     * @param zero
+     * @param twentyFour
+     * @return
+     */
+    Double getTurnOverByDate(LocalDateTime zero, LocalDateTime twentyFour);
+
+    /**
+     * 查询某一日订单数
+     * @param zero
+     * @param twentyFour
+     * @param status
+     * @return
+     */
+    Integer getOrderCountByDate(LocalDateTime zero, LocalDateTime twentyFour, Integer status);
+
 }

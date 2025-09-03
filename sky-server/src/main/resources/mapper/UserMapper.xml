@@ -10,4 +10,15 @@
     <select id="getByOpenid" resultType="com.sky.entity.User">
         SELECT * FROM user WHERE openid = #{openid}
     </select>
+
+    <select id="getNewUserByDate" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM user
+        WHERE create_time >= #{zero} AND
+            create_time &lt;= #{twentyFour}
+    </select>
+
+    <select id="getTotalUserByDate" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM user
+        WHERE create_time &lt;= #{twentyFour}
+    </select>
 </mapper>
