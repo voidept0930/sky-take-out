@@ -217,7 +217,12 @@ public class ReportServiceImpl implements ReportService {
             dateCell.setCellValue(dateList.get(i - 1));
             dateCell.setCellStyle(dateStyle);
             Double turnover = turnoverList.get(i - 1);
-            if (turnover != null) row.createCell(1).setCellValue(turnover);
+            if (turnover != null)
+            {
+                row.createCell(1).setCellValue(turnover);
+            } else {
+                row.createCell(1).setCellValue(0);
+            }
         }
 
         // 用户统计页
